@@ -1,18 +1,43 @@
+# =============================================================
+# Project:     Splunk Home Lab SIEM with AI Incident Response
+# Author:      William Blanco
+# Date:        April 2026
+# Description: Queries Splunk API for security alerts and
+#              generates automated incident reports using AI.
+#              Detects SSH brute-force and port scan attacks.
+# =============================================================
+
+
+
 import requests
 import anthropic
 import json
 from datetime import datetime
 
-# Configuration
+# =============================================================
+# CONFIGURATION
+# Update these values to match your environment 
+# =============================================================
+
 SPLUNK_HOST = "localhost"
 SPLUNK_PORT = 8089
 SPLUNK_USER = "admin"
 SPLUNK_PASSWORD = "your_password"
 ANTHROPIC_API_KEY = "your_api_key"
 
+
+# =============================================================
+# FUNCTION: get_splunk_alerts
+# Connects to Splunk REST API and retrieves recent security events
+# Returns a list of alert dictionaries
+# =============================================================
+
 def get_splunk_alerts():
     url = f"https://{SPLUNK_HOST}:{SPLUNK_PORT}/services/search/jobs/export"
     
+
+    # SPL query to find failed SSH login attempts in the last 24 hours
+    # This is the same detection logic used in our Splunk dashboard
     data = {
         "search": 'search index=main sourcetype=linux_secure "Failed password" | head 10',
         "output_mode": "json",
