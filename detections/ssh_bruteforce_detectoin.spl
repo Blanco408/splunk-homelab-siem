@@ -1,0 +1,15 @@
+# =============================================================
+# Detection: SSH Brute Force
+# Author:    William Blanco
+# Date:      April 2026
+# Description: Detects more than 5 failed SSH login attempts
+#              from a single IP within one minute.
+#              Maps to MITRE ATT&CK T1110 - Brute Force
+# =============================================================
+
+index=main sourcetype=linux_secure "Failed password"
+| rex "from (?P<src_ip>\d+\.\d+\.\d+\.\d+)"
+| bucket _time span=1m
+| stats count as failed_attempts by src_ip, _time
+| where failed_attempts > 5
+| eval threat="SSH Brute Force Detected"
